@@ -4,3 +4,4 @@ This repo contains my solutions for [Advent of Code 2023](https://adventofcode.c
 
 ## Day 01
 
+## Day 02
