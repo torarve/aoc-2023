@@ -32,7 +32,6 @@ for i in range(len(times)):
     
 print(reduce(mul,all_wins))
 
-
 time = int(lines[0][len("Time:"):].replace(" ", ""))
 record = int(lines[1][len("Distance:"):].replace(" ", ""))
 
@@ -40,5 +39,4 @@ result = 0
 for i in range(time):
     if calc_distance(i, time-i)>record:
         result += 1
-print(time, record)
 print(result)
