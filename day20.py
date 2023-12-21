@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from math import lcm
-from pprint import pprint
 from queue import Queue
 
 
@@ -22,9 +21,8 @@ lines = """broadcaster -> a
 &inv -> b
 %b -> con
 &con -> output""".split("\n")
-# print(lines)
 
-lines =read_file()
+lines = read_file()
 
 @dataclass
 class Bus:
@@ -38,7 +36,6 @@ class Bus:
         self.signals = []
         self.send_to(targets, source, False)
         self._process_queue()
-        
     
     def button_press(self):
         self.signals = []
@@ -68,7 +65,7 @@ class FlipFlop:
     outputs: list[str] = field(default_factory=list)
     bus: Bus = field(default=None, repr=False)
     
-    def signal(self, source, signal: bool):
+    def signal(self, _, signal: bool):
         if not signal: # Low signal
             self.state = not self.state
             self.bus.send_to(self.outputs, self.name, self.state)
@@ -99,7 +96,7 @@ class Broadcaster:
     outputs: list[str] = field(default_factory=list)
     bus: Bus = field(default=None, repr=False)
 
-    def signal(self, source, pulse: bool):
+    def signal(self, _, pulse: bool):
         self.bus.send_to(self.outputs, self.name, pulse)
 
 
