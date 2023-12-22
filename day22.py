@@ -17,10 +17,15 @@ class Brick:
                 or self.x2 < other.x1)
                 and
                 not (other.y2 < self.y1
-                or self.y2 < other.y1))
-        
+                or self.y2 < other.y1)
+                and self.z2<other.z1 and self!=other)
+
     def supports(self, other: "Brick") -> bool:
         return self.may_support(other) and self.z2+1==other.z1
+    
+    def drop(self, steps: int):
+        self.z1 -= steps
+        self.z2 -= steps
 
 
 def parse_line(line: str) -> Brick:
@@ -47,40 +52,34 @@ lines = """1,0,1~1,2,1
 
 lines = read_file()
 bricks = [parse_line(line) for line in lines]
-
 # Sort so that bottom block is always moved down first
 bricks.sort(key=lambda b: b.z1)
 for i, brick in enumerate(bricks):
-    bricks_below = [b for b in bricks
-                    if b.may_support(brick)
-                    and b.z2<brick.z1 and b!=brick]
-
+    bricks_below = [b for b in bricks if b.may_support(brick)]
     steps = brick.z1 - 1
     if any(bricks_below):
         z = max([b.z2 for b in bricks_below])
         steps = brick.z1 - z - 1
-    
-    brick.z1 -= steps
-    brick.z2 -= steps
+    brick.drop(steps)
 
 supported_by: dict[int,set[int]] = dict()
-supports: dict[int,list[int]] = dict()
+supports: dict[int,set[int]] = dict()
 for i, brick in enumerate(bricks):
     supported_bricks = [j for j,b in enumerate(bricks)
-                        if b!=brick and brick.supports(b)]
-    supports[i] = supported_bricks
+                        if brick.supports(b)]
+    supports[i] = set(supported_bricks)
     for s in supported_bricks:
         if not s in supported_by:
             supported_by[s] = set()
         supported_by[s].add(i)
-    
+
 res = 0
 for i, other in supports.items():
     if all([len(supported_by[j])>1 for j in other]):
         res += 1
 
 print(res)
-print()
+
 res = 0
 for i in range(len(bricks)):
     disintegrated_blocks = set()
