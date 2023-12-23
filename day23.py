@@ -90,27 +90,28 @@ for x in range(width):
             
 adj = dict([(a, adj[a]) for a in adj if adj[a]])
 vertices = [x for x in adj if len(adj[x])!=2]
-edges = []
+edges = {}
 for v in vertices:
+    edges[v] = []
     for e in adj[v]:
         path = set([v])
         # Shorten each edge
         while e not in vertices:
             path.add(e)
             e = [ee for ee in adj[e] if ee not in path][0]
-        edges.append((v, e, len(path)))
+        edges[v].append((e, len(path)))
 
 def visit2(v, path: set = set()):
     if v[1] == height-1:
         return 0
     
-    next = [e for e in edges if e[0]==v and e[1] not in path]
-    next.sort(key = lambda x: -x[2])
+    next = [e for e in edges[v] if e[0] not in path]
     if len(next)==0:
         # No way forward
         return -1
-    new_path = path.union([v])
-    temp = [(visit2(e, new_path),w) for _, e, w in next]
+    path.add(v)
+    temp = [(visit2(e, path),w) for e, w in next]
+    path.remove(v)
     temp = [a+b for a,b in temp if a>=0]
     return max(temp) if len(temp)>0 else -1
 
